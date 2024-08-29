@@ -1,4 +1,4 @@
-type ServiceResponseErrorType = 'DOUBLE_REPORT' | 'MEASURE_NOT_FOUND' | 'INTERNAL_SERVER_ERROR' | 'INVALID_DATA';
+type ServiceResponseErrorType = 'DOUBLE_REPORT' | 'MEASURE_NOT_FOUND' | 'INTERNAL_SERVER_ERROR' | 'INVALID_DATA' | 'CONFIRMATION_DUPLICATE';
 
 export type ServiceResponseSuccess<T> = {
     success: true;

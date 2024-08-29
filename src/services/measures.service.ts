@@ -84,4 +84,46 @@ async function createMeasure(body: BodyUploadMeasure): Promise<ServiceResponse<U
     };
 }
 
-export default { createMeasure };
+async function confirmMeasure(measure_uuid: string, confirmed_value: number): Promise<ServiceResponse<Measure>> {
+    const measure = await MeasureModel.findOne({
+        where: {
+            measure_uuid,
+        },
+    });
+
+    if (!measure) {
+        return {
+            success: false,
+            data: {
+                error_code: "MEASURE_NOT_FOUND",
+                error_description: "Leitura do mês já realizada",
+            }
+        }
+    }
+
+    if (measure.dataValues.has_confirmed) {
+        return {
+            success: false,
+            data: {
+                error_code: "CONFIRMATION_DUPLICATE",
+                error_description: "Leitura do mês já realizada",
+            }
+        }
+    }
+
+    const updatedMeasure = await MeasureModel.update({
+        has_confirmed: true,
+    }, {
+        where: {
+            measure_uuid,
+        },
+        returning: true,
+    });
+
+    return {
+        success: true,
+        data: updatedMeasure[1][0].dataValues,
+    }
+}
+
+export default { createMeasure, confirmMeasure };

@@ -1,4 +1,4 @@
-
+require('dotenv').config();
 import express, { Request, Response } from 'express';
 import measuresRouter from './routers/measures.router';
 import bodyParser from 'body-parser';

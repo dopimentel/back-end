@@ -14,6 +14,11 @@ async function createMeasure(req: Request, res: Response) {
             ...serviceResponse.data,
         });
     }
+    if (serviceResponse.data.error_code === 'INVALID_DATA') {
+        return res.status(400).json({
+            ...serviceResponse.data,
+        });
+    }
     return res.status(409).json({
         ...serviceResponse.data,
     });

@@ -1,6 +1,6 @@
 import MeasureModel, { MeasureInputtableFields } from "../database/models/measure.model";
 import { Measure } from "../types/Measure";
-import mockGeminiReturn from "./mockGemini.service";
+import geminiService from "./gemini.service";
 import { v4 as uuidv4 } from 'uuid';
 import { MeasureSequelizeModel } from "../database/models/measure.model";
 import CustomerModel from "../database/models/customer.model";
@@ -19,18 +19,6 @@ type UploadMeasureReturn = {
     measure_value: number; // MUST BE A INTEGER - value from mockGeminiReturn
     measure_uuid: string; // created by uuidv4
 }
-
-// async function findMeasureByCustomerCode(customer_code: string): Promise<MeasureSequelizeModel | null> {
-//     const measure = await MeasureModel.findOne({
-//         where: {
-//             customer_code,
-//         },
-//     });
-//     if (!measure) return null;
-//     return measure;
-// }
-
-
 
 async function createMeasure(body: BodyUploadMeasure): Promise<ServiceResponse<UploadMeasureReturn>> {
     const { image, customer_code, measure_datetime, measure_type } = body;
@@ -64,7 +52,17 @@ async function createMeasure(body: BodyUploadMeasure): Promise<ServiceResponse<U
     }
 
 
-    const { image_url, measure_value } = await mockGeminiReturn(image);
+    const serviceResponse = await geminiService.runGemini(image);
+    if (!serviceResponse.success) {
+        return {
+            success: false,
+            data: {
+                error_code: "INVALID_DATA",
+                error_description: "Invalid base64 image",
+            }
+        }
+    }
+    const { image_url, measure_value } = serviceResponse.data;
 
     const measure = await MeasureModel.create({
         measure_uuid: uuidv4(),

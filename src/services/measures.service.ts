@@ -113,16 +113,27 @@ async function confirmMeasure(measure_uuid: string, confirmed_value: number): Pr
 
     const updatedMeasure = await MeasureModel.update({
         has_confirmed: true,
+        measure_value: confirmed_value,
     }, {
         where: {
             measure_uuid,
         },
         returning: true,
     });
+    
+    const res = await MeasureModel.findOne({
+        where: {
+            measure_uuid,
+        },
+    });
+
+    const data = {
+        ...res?.dataValues,
+    } as Measure;
 
     return {
         success: true,
-        data: updatedMeasure[1][0].dataValues,
+        data,
     }
 }
 

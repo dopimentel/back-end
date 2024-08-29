@@ -24,5 +24,23 @@ async function createMeasure(req: Request, res: Response) {
     });
 }
 
-export default { createMeasure };
+async function confirmMeasure(req: Request, res: Response) {
+    const { measure_uuid, confirmed_value } = req.body;
+    const serviceResponse = await measuresService.confirmMeasure(measure_uuid, confirmed_value);
+    if (serviceResponse.success) {
+        return res.status(200).json({
+            success: true,
+        });
+    }
+    if (serviceResponse.data.error_code === 'MEASURE_NOT_FOUND') {
+        return res.status(404).json({
+            ...serviceResponse.data,
+        });
+    }
+    return res.status(409).json({
+        ...serviceResponse.data,
+    });
+}
+
+export default { createMeasure, confirmMeasure };
 

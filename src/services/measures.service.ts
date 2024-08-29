@@ -5,7 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { MeasureSequelizeModel } from "../database/models/measure.model";
 import CustomerModel from "../database/models/customer.model";
 import { ServiceResponse } from "../types/ServiceResponse";
-
+import { Op } from "sequelize";
+import moment from "moment";
 
 type BodyUploadMeasure = {
     image: string; // base64 - missing validation
@@ -34,10 +35,18 @@ async function createMeasure(body: BodyUploadMeasure): Promise<ServiceResponse<U
 
     }
 
+    // const currentMonth = moment().format('MM');
+    // const currentYear = moment().format('YYYY');
     const measureExists = await MeasureModel.findOne({
         where: {
             customer_code,
             measure_type,
+            measure_datetime: {
+                [Op.between]: [
+                    moment().startOf('month').toDate(),
+                    moment().endOf('month').toDate(),
+                ],
+            },
         },
     });
 
@@ -136,5 +145,6 @@ async function confirmMeasure(measure_uuid: string, confirmed_value: number): Pr
         data,
     }
 }
+
 
 export default { createMeasure, confirmMeasure };

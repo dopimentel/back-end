@@ -2,15 +2,19 @@
   "dependencies": {
     "@types/sequelize": "4.28",
     "dotenv": "^16.4.5",
-    "sequelize": "^6.25.5"
+    "express": "^4.19.2",
+    "sequelize": "^6.25.5",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@types/uuid": "^10.0.0",
     "mysql2": "2.3",
+    "nodemon": "2.0.15",
     "sequelize-cli": "6.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "db:reset": "npx -y tsc && npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed"
+    "db:reset": "npx -y tsc && npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"
   }
 }

@@ -14,3 +14,5 @@ async function mockGeminiReturn(base64Image: string): Promise<GeminiReturn> {
         }, 1000);
     });
 }
+
+export default mockGeminiReturn;

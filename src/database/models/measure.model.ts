@@ -1,4 +1,4 @@
-import { DataTypes, ModelDefined, Optional } from 'sequelize';
+import { DataTypes, Model, ModelDefined, Optional } from 'sequelize';
 import db from './index';
 import { Measure } from '../../types/Measure';
 import { v4 as uuidv4 } from 'uuid';
@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 export type MeasureInputtableFields = Optional<Measure, 'id'>;
 
 type MeasureSequelizeModelCreator = ModelDefined<Measure, MeasureInputtableFields>;
+
+export type MeasureSequelizeModel = Model<Measure, MeasureInputtableFields>
 
 
 const MeasureModel: MeasureSequelizeModelCreator = db.define('Measure', {

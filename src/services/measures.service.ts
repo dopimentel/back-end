@@ -50,7 +50,7 @@ async function createMeasure(body: BodyUploadMeasure): Promise<UploadMeasureRetu
 
     const measure = await MeasureModel.create({
         measure_uuid: uuidv4(),
-        measure_datetime,
+        measure_datetime: new Date(measure_datetime),
         measure_type,
         has_confirmed: false,
         image_url,

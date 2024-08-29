@@ -34,6 +34,7 @@ const uploadSchema = Joi.object({
         'string.valid': 'Type must be a valid type',
         'string.empty': 'Type is required',
         'any.required': 'Type is required',
+        'any.only': 'Type must be GAS or WATER',
     }),
 })
 

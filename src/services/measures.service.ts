@@ -4,6 +4,7 @@ import mockGeminiReturn from "./mockGemini.service";
 import { v4 as uuidv4 } from 'uuid';
 import { MeasureSequelizeModel } from "../database/models/measure.model";
 import CustomerModel from "../database/models/customer.model";
+import { ServiceResponse } from "../types/ServiceResponse";
 
 
 type BodyUploadMeasure = {
@@ -31,7 +32,7 @@ type UploadMeasureReturn = {
 
 
 
-async function createMeasure(body: BodyUploadMeasure): Promise<UploadMeasureReturn> {
+async function createMeasure(body: BodyUploadMeasure): Promise<ServiceResponse<UploadMeasureReturn>> {
     const { image, customer_code, measure_datetime, measure_type } = body;
     const customer = await CustomerModel.findOne({
         where: {
@@ -43,6 +44,23 @@ async function createMeasure(body: BodyUploadMeasure): Promise<UploadMeasureRetu
             customer_code,
         });
 
+    }
+
+    const measureExists = await MeasureModel.findOne({
+        where: {
+            customer_code,
+            measure_type,
+        },
+    });
+
+    if (measureExists) {
+        return {
+            success: false,
+            data: { 
+                error_code: "DOUBLE_REPORT", 
+                error_description: "Leitura do mês já realizada"
+            }
+        }
     }
 
 
@@ -59,9 +77,12 @@ async function createMeasure(body: BodyUploadMeasure): Promise<UploadMeasureRetu
         
     });
     return {
-        image_url: measure.dataValues.image_url,
-        measure_value: measure.dataValues.measure_value,
-        measure_uuid: measure.dataValues.measure_uuid,
+        success: true,
+        data: {
+            image_url: measure.dataValues.image_url,
+            measure_value: measure.dataValues.measure_value,
+            measure_uuid: measure.dataValues.measure_uuid,
+        }
     };
 }
 

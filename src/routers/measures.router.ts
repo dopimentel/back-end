@@ -10,6 +10,6 @@ measuresRouter.get('/upload', (_req, res) => {
 );
 
 measuresRouter.post('/upload', validation.validateUpload, measuresController.createMeasure);
-measuresRouter.patch('/confirm', measuresController.confirmMeasure);
+measuresRouter.patch('/confirm', validation.validateConfirm, measuresController.confirmMeasure);
 
 export default measuresRouter;

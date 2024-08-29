@@ -38,5 +38,19 @@ const uploadSchema = Joi.object({
     }),
 })
 
+const confirmSchema = Joi.object({
+    measure_uuid: Joi.string().required().messages({
+        'string.base': 'measure_uuid must be a valid string',
+        'string.empty': 'measure_uuid is required',
+        'any.required': 'measure_uuid is required',
+    }),
+    confirmed_value: Joi.number().integer().required().messages({
+        'number.base': 'confirmed_value must be a valid number',
+        'number.integer': 'confirmed_value must be a valid integer',
+        'number.empty': 'confirmed_value is required',
+        'any.required': 'confirmed_value is required',
+    }),
+})
 
-export default { uploadSchema };
+
+export default { uploadSchema, confirmSchema };

@@ -49,7 +49,7 @@ export default {
       },
       measure_value: {
         allowNull: false,
-        type: DataTypes.DECIMAL(10, 2),
+        type: DataTypes.INTEGER,
       }
     }) 
   }, 

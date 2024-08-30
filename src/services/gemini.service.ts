@@ -91,8 +91,7 @@ async function runGemini(base64Image: string): Promise<ServiceResponse<GeminiRet
                 },
             },
             ]);
-        const value = parseFloat(result.response.text());
-        console.log(value);
+        const value = Math.trunc(parseFloat(result.response.text()));
         return {
             success: true,
             data: {

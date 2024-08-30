@@ -7,6 +7,7 @@ import CustomerModel from "../database/models/customer.model";
 import { ServiceResponse } from "../types/ServiceResponse";
 import { Op } from "sequelize";
 import moment from "moment";
+import { Customer } from "../types/Customer";
 
 type BodyUploadMeasure = {
     image: string; // base64 - missing validation
@@ -19,6 +20,14 @@ type UploadMeasureReturn = {
     image_url: string; // missing validation
     measure_value: number; // MUST BE A INTEGER - value from mockGeminiReturn
     measure_uuid: string; // created by uuidv4
+}
+
+type CustomerWithMeasures = Partial<Customer> & {
+    measures: Partial<Measure>[];
+  };
+
+type WhereCondition = {
+    measure_type?: 'WATER' | 'GAS'; 
 }
 
 async function createMeasure(body: BodyUploadMeasure): Promise<ServiceResponse<UploadMeasureReturn>> {
@@ -146,5 +155,43 @@ async function confirmMeasure(measure_uuid: string, confirmed_value: number): Pr
     }
 }
 
+async function listMeasuresByCustomerCode(code: string, whereCondition?: WhereCondition): Promise<ServiceResponse<CustomerWithMeasures>> {
+    const customerFromModel = await CustomerModel.findOne( {
+        where: { customer_code: code },
+        attributes: ['customer_code'],
+        include: [
+            {
+                model: MeasureModel,
+                as: 'measures',
+                attributes: ['measure_uuid', 'measure_datetime', 'measure_type', 'has_confirmed', 'image_url'],
+                where: whereCondition,
+            }
+        ]
+    }
 
-export default { createMeasure, confirmMeasure };
+    ) as any;
+
+    if (!customerFromModel) {
+        return {
+            success: false,
+            data: {
+                error_code: 'MEASURE_NOT_FOUND',
+                error_description: 'Nenhuma leitura encontrada',
+            },
+        };
+    };
+
+    const measures = customerFromModel?.dataValues.measures.map((measure: any) => measure.dataValues);
+
+    const customer: CustomerWithMeasures = {
+        ...customerFromModel?.dataValues,
+        measures,
+    } as CustomerWithMeasures;
+    console.log(customer);
+    return {
+        success: true,
+        data: customer,
+    };
+}
+
+export default { createMeasure, confirmMeasure, listMeasuresByCustomerCode };

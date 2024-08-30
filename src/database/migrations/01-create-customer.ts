@@ -11,11 +11,11 @@ export default {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-        customer_code: {
-            allowNull: false,
-            unique: true,
-            type: DataTypes.STRING,
-        }
+      customer_code: {
+        allowNull: false,
+        unique: true,
+        type: DataTypes.STRING,
+      }
     }) 
   }, 
   

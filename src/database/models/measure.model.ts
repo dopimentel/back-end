@@ -2,6 +2,7 @@ import { DataTypes, Model, ModelDefined, Optional } from 'sequelize';
 import db from './index';
 import { Measure } from '../../types/Measure';
 import { v4 as uuidv4 } from 'uuid';
+import CustomerModel from './customer.model';
 
 
 export type MeasureInputtableFields = Optional<Measure, 'id'>;
@@ -48,6 +49,7 @@ const MeasureModel: MeasureSequelizeModelCreator = db.define('Measure', {
         references: {
           model: 'customers',
           key: 'customer_code',
+          
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
@@ -61,5 +63,8 @@ const MeasureModel: MeasureSequelizeModelCreator = db.define('Measure', {
   timestamps: false,
   underscored: false,
 });
+
+CustomerModel.hasMany(MeasureModel, { foreignKey: 'customer_code', sourceKey: 'customer_code', as: 'measures' });
+MeasureModel.belongsTo(CustomerModel, { foreignKey: 'customer_code', targetKey: 'customer_code', as: 'customer' });
 
 export default MeasureModel;

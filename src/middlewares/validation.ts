@@ -22,6 +22,13 @@ function validateConfirm(req: Request, res: Response, next: NextFunction) {
       error_description: error.message
   });
   }
+  const { confirmed_value } = req.body;
+  if (typeof confirmed_value !== 'number') {
+    return res.status(400).json({ 
+      error_code: "INVALID_DATA",
+      error_description: "confirmed_value must be a number"
+  });
+  }
   next();
 }
 

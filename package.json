@@ -1,4 +1,4 @@
-{
+{ "main": "./build/index",
   "dependencies": {
     "@google/generative-ai": "^0.17.1",
     "@types/sequelize": "4.28",
@@ -21,8 +21,12 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "node ./build/index.js",
+    "build": "tsc --project tsconfig.json",
     "dev": "nodemon --watch \"./src/**\" --ext \"ts,js\" --ignore \"tests/**/*.test.ts\" --exec \"ts-node src/index.ts\"",
-    "db:reset": "npx -y tsc && npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"
+    "db:reset": "npx -y tsc && npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all",
+    "prestart": "npm run build && npm run db:reset",
+    "predev": "npm run db:reset"
+    
   }
 }

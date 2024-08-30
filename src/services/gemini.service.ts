@@ -1,21 +1,21 @@
 import { GoogleAIFileManager } from "@google/generative-ai/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import path from 'path';
-import { writeFileSync, unlink } from 'fs';
+import { writeFile, unlink } from 'fs/promises';
 import { ServiceResponse } from "../types/ServiceResponse";
 
 
 const API_KEY = process.env.GEMINI_API_KEY
 
-const mediaPath = path.join(__dirname, 'media');
-const filePath = mediaPath + '/tempFile';
+// const mediaPath = path.join(__dirname, 'media');
+// const filePath = mediaPath + '/tempFile';
 
 interface GeminiReturn {
     image_url: string;
     measure_value: number;
 }
 
-function saveImageFromBase64(base64Image: string): string {
+async function saveImageFromBase64(base64Image: string): Promise<string> {
     // Extract the image extension
     const extension = base64Image.substring("data:image/".length, base64Image.indexOf(";base64"));
 
@@ -26,7 +26,7 @@ function saveImageFromBase64(base64Image: string): string {
     const buffer = Buffer.from(base64Data, 'base64');
 
     // Save the buffer to a file with the specified extension
-    writeFileSync(filePath + '.' + extension, buffer);
+    await writeFile(path.join(__dirname, 'media') + '.' + extension, buffer);
 
     return extension;
 }
@@ -42,10 +42,10 @@ type uploadResponse = {
 
 async function uploadImage(base64Image: string): Promise<uploadResponse> {
     const fileManager = new GoogleAIFileManager(API_KEY as string);
-    const extension = saveImageFromBase64(base64Image);
+    const extension = await saveImageFromBase64(base64Image);
     try {
         const uploadResponse = await fileManager.uploadFile(
-        `${filePath}.${extension}`,
+        `${path.join(__dirname, 'media')}.${extension}`,
         {
           mimeType: `image/${extension}`,
           displayName: `image.${extension}`,
@@ -64,10 +64,8 @@ async function uploadImage(base64Image: string): Promise<uploadResponse> {
 
         
     } finally {
-        unlink(filePath + '.' + extension, (err) => {
-            if (err) {
-                console.error(err);
-            }
+        unlink(path.join(__dirname, 'media') + '.' + extension).catch((err: any) => {
+            console.error(err);
         });
     }
 

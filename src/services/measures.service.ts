@@ -26,7 +26,8 @@ type CustomerWithMeasures = Partial<Customer> & {
     measures: Partial<Measure>[];
   };
 
-type WhereCondition = {
+export type WhereCondition = {
+    customer_code: string;
     measure_type?: 'WATER' | 'GAS'; 
 }
 
@@ -155,16 +156,16 @@ async function confirmMeasure(measure_uuid: string, confirmed_value: number): Pr
     }
 }
 
-async function listMeasuresByCustomerCode(code: string, whereCondition?: WhereCondition): Promise<ServiceResponse<CustomerWithMeasures>> {
+async function listMeasuresByCustomerCode(whereCondition: WhereCondition): Promise<ServiceResponse<CustomerWithMeasures>> {
     const customerFromModel = await CustomerModel.findOne( {
-        where: { customer_code: code },
+        where: { customer_code: whereCondition.customer_code },
         attributes: ['customer_code'],
         include: [
             {
                 model: MeasureModel,
                 as: 'measures',
                 attributes: ['measure_uuid', 'measure_datetime', 'measure_type', 'has_confirmed', 'image_url'],
-                where: whereCondition,
+                where: whereCondition.measure_type ? { measure_type: whereCondition.measure_type } : {},
             }
         ]
     }
@@ -187,11 +188,16 @@ async function listMeasuresByCustomerCode(code: string, whereCondition?: WhereCo
         ...customerFromModel?.dataValues,
         measures,
     } as CustomerWithMeasures;
-    console.log(customer);
     return {
         success: true,
         data: customer,
     };
 }
+
+// async function t() {
+//     const res = await listMeasuresByCustomerCode({ customer_code: 'CUST001'});
+
+// }
+// t();
 
 export default { createMeasure, confirmMeasure, listMeasuresByCustomerCode };

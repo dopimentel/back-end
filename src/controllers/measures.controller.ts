@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import measuresService from '../services/measures.service';
+import measuresService, { WhereCondition } from '../services/measures.service';
 
 async function createMeasure(req: Request, res: Response) {
     // try {
@@ -42,5 +42,27 @@ async function confirmMeasure(req: Request, res: Response) {
     });
 }
 
-export default { createMeasure, confirmMeasure };
+async function listMeasures(req: Request, res: Response) {
+    const { customer_code } = req.params;
+    const { measure_type } = req.query;
+    let whereCondition: WhereCondition = { customer_code };
+    if (measure_type && typeof measure_type === 'string') {
+        const normalizedMeasureType = measure_type.toUpperCase();
+        if (['WATER', 'GAS'].includes(normalizedMeasureType)) {
+            whereCondition = { ...whereCondition, measure_type: normalizedMeasureType as 'WATER' | 'GAS' };
+        }
+    }
+
+    const serviceResponse = await measuresService.listMeasuresByCustomerCode(whereCondition);
+    if (serviceResponse.success) {
+        return res.status(200).json({
+            ...serviceResponse.data,
+        });
+    }
+    return res.status(404).json({
+        ...serviceResponse.data,
+    });
+}
+
+export default { createMeasure, confirmMeasure, listMeasures };
 

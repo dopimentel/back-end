@@ -11,6 +11,6 @@ measuresRouter.get('/upload', (_req, res) => {
 
 measuresRouter.post('/upload', validation.validateUpload, measuresController.createMeasure);
 measuresRouter.patch('/confirm', validation.validateConfirm, measuresController.confirmMeasure);
-measuresRouter.get('/:customer_code/list', measuresController.listMeasures);
+measuresRouter.get('/:customer_code/list', validation.validateListMeasures, measuresController.listMeasures);
 
 export default measuresRouter;

@@ -25,6 +25,20 @@ function validateConfirm(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+function validateListMeasures(req: Request, res: Response, next: NextFunction) {
+  const { measure_type } = req.query;
+  if (measure_type && typeof measure_type === 'string') {
+    const normalizedMeasureType = measure_type.toUpperCase();
+    if (!['WATER', 'GAS'].includes(normalizedMeasureType)) {
+      return res.status(400).json({ 
+        error_code: 'INVALID_TYPE',
+        error_description: 'Tipo de medição não permitida'
+       });
+    }
+  }
+  next();
+}
+
 
 // function validateBody(schema: Joi.ObjectSchema) {
 //   return (req: Request, res: Response, next: NextFunction) => {
@@ -36,4 +50,4 @@ function validateConfirm(req: Request, res: Response, next: NextFunction) {
 //   };
 // }
 
-export default { validateUpload, validateConfirm };
+export default { validateUpload, validateConfirm, validateListMeasures };
